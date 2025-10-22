@@ -2,8 +2,14 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
     <head>
         @include('partials.head')
+      
+    
+    <!-- OR use this alternative if above doesn't work -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script defer  src="{{ asset('js/toast.js') }}" ></script>
     </head>
-    <body class="min-h-screen bg-white dark:bg-zinc-800">
+    <body class="min-h-screen bg-white dark:bg-zinc-800 ">
+          <x-flash-message position="top-right" />
         <flux:sidebar sticky stashable class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
             <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
 
@@ -14,6 +20,7 @@
             <flux:navlist variant="outline">
                 <flux:navlist.group :heading="__('Platform')" class="grid">
                     <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
+                    <flux:navlist.item icon="squares-2x2" :href="route('category.index')" :current="request()->routeIs('category.*')" wire:navigate>{{ __('Categories') }}</flux:navlist.item>
                 </flux:navlist.group>
             </flux:navlist>
 
@@ -127,6 +134,19 @@
 
         {{ $slot }}
 
+
+
+   
         @fluxScripts
+  
+
+          
     </body>
+
+       <script>
+Livewire.on('alert', function(detail) {
+    const { type, message } = detail[0];
+    showToast(type, message);
+});
+</script>
 </html>
