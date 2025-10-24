@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('description')->nullable();
             $table->date('date');
-            $table->string('type');  //'one-time','recurring'
+            $table->string('type')->default('one-time');  //'one-time','recurring'
             $table->string('recurring_frequency')->nullable();  // daily,weekly,monthly,yearly
             $table->date('recurring_start_date')->nullable();
             $table->date('recurring_end_date')->nullable();

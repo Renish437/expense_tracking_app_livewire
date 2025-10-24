@@ -21,6 +21,33 @@ class Budget extends Model
     public function category(){
         return $this->belongsTo(Category::class);
     }
+
+
+    public function getSpentAmount():float{
+        if($this->category_id){
+            return $this->category->getTotalSpentForMonth($this->month,$this->year);
+        }
+      return Expense::forUser($this->user_id)
+    ->inMonth($this->month, $this->year)
+    ->sum('amount');
+    }
     
+    
+
+    public function getRemainingAmount():float{
+        return $this->amount - $this->getSpentAmount();
+    }
+    public function getPercentageUsed() :float{
+        if($this->amount==0){
+            return 0;
+        }
+         return ($this->getSpentAmount()/$this->amount) * 100;
+    }
+    public function isOverBudget():bool{
+        return $this->getSpentAmount() > $this->amount;
+    }
+        // ✅ Scope for filtering by user
+
+
 
 }

@@ -96,43 +96,49 @@ class Categories extends Component
 
     // 🚀 CREATE - DISPATCH TOAST EVENT
 public function saveCategory()
-{
-    $this->validate([
-        'name' => 'required|string|max:255',
-        'color' => 'required|string|max:7',
-    ]);
-
-    if (!$this->validateIcon()) {
-        $this->dispatch('alert', [
-            'type' => 'error',
-            'message' => 'Invalid icon name. Please choose from the grid.'
+    {
+        $this->validate([
+            'name' => 'required|string|max:255',
+            'color' => 'required|string|max:7',
         ]);
-        return;
+
+        if (!$this->validateIcon()) {
+            $this->dispatch('alert', [
+                'type' => 'error',
+                'message' => 'Invalid icon name. Please choose from the grid.'
+            ]);
+            session()->flash('message', 'Invalid icon name. Please choose from the grid.');
+            return;
+        }
+
+        if ($this->isEditing) {
+            Category::find($this->editingId)->update([
+                'name' => $this->name,
+                'color' => $this->color,
+                'icon' => $this->icon
+            ]);
+            $this->dispatch('alert', [
+                'type' => 'success',
+                'message' => 'Category updated successfully!'
+            ]);
+            session()->flash('message', 'Category updated successfully!');
+        } else {
+            Category::create([
+                'name' => $this->name,
+                'color' => $this->color,
+                'icon' => $this->icon,
+                'user_id' => Auth::user()->id,
+            ]);
+            $this->dispatch('alert', [
+                'type' => 'success',
+                'message' => 'Category created successfully!'
+            ]);
+            session()->flash('message', 'Category created successfully!');
+        }
+
+        $this->resetForm();
+        $this->dispatch('categorySaved');
     }
-
-    if ($this->isEditing) {
-        Category::find($this->editingId)->update([
-            'name' => $this->name, 'color' => $this->color, 'icon' => $this->icon
-        ]);
-        $this->dispatch('alert', [
-            'type' => 'success',
-            'message' => 'Category updated successfully!'
-        ]);
-    } else {
-        Category::create([
-            'name' => $this->name, 'color' => $this->color, 'icon' => $this->icon,
-            'user_id' => Auth::user()->id,
-        ]);
-        $this->dispatch('alert', [
-            'type' => 'success',
-            'message' => 'Category created successfully!'
-        ]);
-    }
-
-    $this->resetForm();
-    $this->dispatch('categorySaved');
-}
-
 
     public function editCategory($id)
     {
@@ -146,36 +152,40 @@ public function saveCategory()
         $this->resetValidation();
     }
 
-    // 🚀 DELETE - DISPATCH TOAST EVENT
     public function deleteCategory($id)
     {
-       $category= Category::findOrFail($id);
-        if($category->user_id !== Auth::user()->id){
+        $category = Category::findOrFail($id);
+        if ($category->user_id !== Auth::user()->id) {
             abort(403);
         }
-        if($category->expenses()->count() > 0){
-         $this->dispatch('alert', [
-            'type' => 'success',
-            'message' => 'Can not delete category with existing expenses!'
-        ]);
-        return;
+        if ($category->expenses()->count() > 0) {
+            $this->dispatch('alert', [
+                'type' => 'error',
+                'message' => 'Cannot delete category with existing expenses!'
+            ]);
+            session()->flash('message', 'Cannot delete category with existing expenses!');
+            return;
         }
-        
         $category->delete();
         $this->dispatch('alert', [
             'type' => 'success',
             'message' => 'Category deleted successfully!'
         ]);
+        session()->flash('message', 'Category deleted successfully!');
         $this->dispatch('categorySaved');
     }
-    public function cancelEdit(){
-         $this->reset(['name','color','icon','editingId','isEditing']);
-         $this->color='#3B82F6';
+
+    public function cancelEdit()
+    {
+        $this->reset(['name', 'color', 'icon', 'editingId', 'isEditing']);
+        $this->color = '#3B82F6';
     }
+
     #[Computed]
-    public function categories(){
+    public function categories()
+    {
         return Category::where('user_id', Auth::user()->id)
-                ->withCount('expenses')->latest()->get();
+            ->withCount('expenses')->latest()->get();
     }
 
     public function render()

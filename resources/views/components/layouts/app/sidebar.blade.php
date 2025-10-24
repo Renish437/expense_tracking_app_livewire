@@ -21,6 +21,7 @@
                 <flux:navlist.group :heading="__('Platform')" class="grid">
                     <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
                     <flux:navlist.item icon="squares-2x2" :href="route('category.index')" :current="request()->routeIs('category.*')" wire:navigate>{{ __('Categories') }}</flux:navlist.item>
+                    <flux:navlist.item icon="credit-card" :href="route('budget.index')" :current="request()->routeIs('budget.*')" wire:navigate>{{ __('Budgets') }}</flux:navlist.item>
                 </flux:navlist.group>
             </flux:navlist>
 
@@ -148,5 +149,9 @@ Livewire.on('alert', function(detail) {
     const { type, message } = detail[0];
     showToast(type, message);
 });
+   const url = new URL(window.location);
+    url.searchParams.delete("month");
+    url.searchParams.delete("year");
+    window.history.replaceState({}, "", url);
 </script>
 </html>
