@@ -65,8 +65,13 @@ select:focus[data-flux-control] {
     @apply size-4;
 } */
 
-.bg-primary-gradient{
-      /* background: linear-gradient(to bottom right, #0E7490, #1D4ED8); */
-      background: linear-gradient(to right, #4F46E5, #8B5CF6);
+.bg-primary-gradient {
+  background: linear-gradient(to right, #4F46E5, #8B5CF6);
+}
 
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .bg-primary-gradient {
+    background: linear-gradient(to right, #2f2f33, #2d2c30);
+  }
 }

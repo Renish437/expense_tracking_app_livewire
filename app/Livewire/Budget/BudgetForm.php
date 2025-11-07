@@ -16,8 +16,12 @@ class BudgetForm extends Component
     public $month;
     public $year;
     public $category_id = '';
-    
     public $isEdit = false;
+
+    // ADD THESE 3 LINES
+    public $type = 'one-time';
+    public $recurring_frequency = 'monthly';
+    public $recurring_start_date = '';
 
     protected function rules()
     {
@@ -28,17 +32,15 @@ class BudgetForm extends Component
             'category_id' => 'nullable|exists:categories,id',
         ];
 
-        // Check for duplicate budget
         $uniqueRule = 'unique:budgets,category_id,NULL,id,user_id,' . Auth::user()->id . ',month,' . $this->month . ',year,' . $this->year;
-        
         if ($this->isEdit) {
             $uniqueRule = 'unique:budgets,category_id,' . $this->budgetId . ',id,user_id,' . Auth::user()->id . ',month,' . $this->month . ',year,' . $this->year;
         }
-
         $rules['category_id'] = $this->category_id ? 'required|exists:categories,id|' . $uniqueRule : 'nullable|' . $uniqueRule;
 
         return $rules;
     }
+
     protected $messages = [
         'amount.required' => 'Please enter a budget amount.',
         'amount.min' => 'Budget amount must be greater than 0.',
@@ -49,7 +51,6 @@ class BudgetForm extends Component
 
     public function mount($budgetId = null)
     {
- 
         if ($budgetId) {
             $this->isEdit = true;
             $this->budgetId = $budgetId;
@@ -63,11 +64,9 @@ class BudgetForm extends Component
     public function loadBudget()
     {
         $budget = Budget::findOrFail($this->budgetId);
-        
         if ($budget->user_id !== Auth::user()->id) {
             abort(403);
         }
-
         $this->amount = $budget->amount;
         $this->month = $budget->month;
         $this->year = $budget->year;
@@ -88,11 +87,9 @@ class BudgetForm extends Component
 
         if ($this->isEdit) {
             $budget = Budget::findOrFail($this->budgetId);
-            
             if ($budget->user_id !== Auth::user()->id) {
                 abort(403);
             }
-
             $budget->update($data);
             session()->flash('message', 'Budget updated successfully.');
         } else {
@@ -102,32 +99,39 @@ class BudgetForm extends Component
 
         return redirect()->route('budget.index');
     }
+
     #[Computed]
-    public function months(){
-        return collect(range(1,12))->map(function ($month) {
+    public function months()
+    {
+        return collect(range(1, 12))->map(function ($month) {
             return [
                 'value' => $month,
-                'name' => Carbon::create(null,$month, 1)->format('F'),
+                'name' => Carbon::create(null, $month, 1)->format('F'),
             ];
         });
     }
+
     #[Computed]
-    public function years(){
+    public function years()
+    {
         $currentYear = now()->year;
         return collect(range($currentYear - 1, $currentYear + 2));
     }
-       #[Computed]
-       public function categories(){
-         return Category::where('user_id', Auth::user()->id)
-                      ->orderBy('name')
-                      ->get();
-       }
+
+    #[Computed]
+    public function categories()
+    {
+        return Category::where('user_id', Auth::user()->id)
+            ->orderBy('name')
+            ->get();
+    }
+
     public function render()
     {
-        return view('livewire.budget.budget-form',[
-        'categories'=> $this->categories,
-        'months' => $this->months,
-        'years' => $this->years
+        return view('livewire.budget.budget-form', [
+            'categories' => $this->categories,
+            'months' => $this->months,
+            'years' => $this->years
         ]);
     }
 }

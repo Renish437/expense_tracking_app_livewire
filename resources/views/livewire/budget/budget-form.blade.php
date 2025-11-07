@@ -1,229 +1,143 @@
-<div class="min-h-screen bg-neutral-50 dark:bg-neutral-900 rounded">
+<div class="min-h-screen">
     <!-- Header -->
-    <div class="bg-gradient-to-r from-indigo-600 to-purple-600 shadow-lg">
+    <div class="bg-gradient-to-r from-indigo-600 to-purple-600 shadow-xl">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-3xl font-bold text-white">
-                        {{ $isEdit ? 'Edit Budget' : 'Create New Budget' }}
-                    </h1>
-                    <p class="text-indigo-100 mt-1">
-                        {{ $isEdit ? 'Update your budget details' : 'Set spending limits for better financial control' }}
-                    </p>
+                    <h1 class="text-3xl font-bold text-white">{{ $isEdit ? 'Edit Expense' : 'Add New Expense' }}</h1>
+                    <p class="text-indigo-100 mt-1">{{ $isEdit ? 'Update details' : 'Record a new transaction' }}</p>
                 </div>
-                <a href="{{ route('budget.index') }}" class="text-indigo-100 hover:text-white transition">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </a>
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleTheme()" class="p-2.5 bg-white/10 hover:bg-white/20 rounded-xl text-white">
+                        <span class="hidden dark:inline"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m8.485-8.485l-.707.707M5.636 5.636l-.707.707m14.95 0l-.707-.707m-14.95 0l-.707-.707M12 7a5 5 0 100 10 5 5 0 000-10z"/></svg></span>
+                        <span class="dark:hidden"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg></span>
+                    </button>
+                    <a href="/expenses" class="text-white hover:text-indigo-200">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <form wire:submit="save" class="w-full space-y-6">
-            <!-- Session Message -->
-            @if (session()->has('message'))
-                <div class="mb-6 bg-green-100 dark:bg-green-900/50 border border-green-200 dark:border-green-700 text-green-800 dark:text-green-200 px-4 py-3 rounded-lg">
-                    {{ session('message') }}
-                </div>
-            @endif
-            <!-- Budget Period Card -->
-            <div class="bg-white dark:bg-neutral-800 rounded-xl shadow-md p-6">
-                <h3 class="text-lg font-semibold text-neutral-800 dark:text-neutral-200 mb-6 flex items-center gap-2">
-                    <svg class="w-6 h-6 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                    </svg>
-                    Budget Period
+
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <form wire:submit="save" class="space-y-8">
+            <!-- Basic Info -->
+            <div class="bg-white dark:bg-neutral-800 rounded-2xl shadow-xl p-8 border border-neutral-200 dark:border-neutral-700">
+                <h3 class="text-xl font-bold mb-6 flex items-center gap-3">
+                    <svg class="w-6 h-6 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    Basic Information
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Month -->
                     <div>
-                        <label for="month" class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                            Month <span class="text-red-500">*</span>
-                        </label>
-                        <select wire:model.live="month" id="month" class="w-full px-4 py-3 border dark:bg-neutral-700 border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent @error('month') border-red-500 dark:border-red-400 @enderror">
-                            <option value="">Select Month</option>
-                            @foreach($months as $monthOption)
-                                <option value="{{ $monthOption['value'] }}" {{ $month == $monthOption['value'] ? 'selected' : '' }}>
-                                    {{ $monthOption['name'] }} 
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('month')
-                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                        @enderror
-                    </div>
-                    <!-- Year -->
-                    <div>
-                        <label for="year" class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                            Year <span class="text-red-500">*</span>
-                        </label>
-                        <select wire:model.live="year" id="year" class="w-full px-4 py-3 border dark:bg-neutral-700 border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent @error('year') border-red-500 dark:border-red-400 @enderror">
-                            <option value="">Select Year</option>
-                            @foreach($years as $yearOption)
-                                <option value="{{ $yearOption }}" {{ $year == $yearOption ? 'selected' : '' }}>
-                                    {{ $yearOption }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('year')
-                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                        @enderror
-                    </div>
-                </div>
-                <!-- Combined Date Message -->
-                {{-- @if($monthFromQuery && $yearFromQuery)
-                    <p class="mt-2 text-sm text-indigo-600 dark:text-indigo-400">
-                        Date pre-selected from URL: {{ \Carbon\Carbon::create($year, $month, 1)->format('F Y') }}
-                    </p>
-                @else
-                    @if(request()->query('month') && !$monthFromQuery)
-                        <p class="mt-2 text-sm text-yellow-600 dark:text-yellow-400">
-                            Invalid month provided in URL ({{ request()->query('month') }}). Defaulting to current month.
-                        </p>
-                    @endif
-                    @if(request()->query('year') && !$yearFromQuery)
-                        <p class="mt-2 text-sm text-yellow-600 dark:text-yellow-400">
-                            Invalid year provided in URL ({{ request()->query('year') }}). Defaulting to current year.
-                        </p>
-                    @endif
-                @endif --}}
-            </div>
-            <!-- Budget Details Card -->
-            <div class="bg-white dark:bg-neutral-800 rounded-xl shadow-md p-6">
-                <h3 class="text-lg font-semibold text-neutral-800 dark:text-neutral-200 mb-6 flex items-center gap-2">
-                    <svg class="w-6 h-6 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    Budget Details
-                </h3>
-                <div class="space-y-6">
-                    <!-- Category -->
-                    <div>
-                        <label for="category_id" class="block text-sm font-medium text-neutral-700 dark:text-neutral-200 mb-2">
-                            Category
-                        </label>
-                        <select wire:model.live="category_id" id="category_id" class="w-full px-4 py-3 border dark:bg-neutral-700 border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent @error('category_id') border-red-500 dark:border-red-400 @enderror">
-                            <option value="">Overall Budget (All Categories)</option>
-                            @foreach($categories as $category)
-                                <option value="{{ $category->id }}" {{ $category_id == $category->id ? 'selected' : '' }}>
-                                    {{ $category->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('category_id')
-                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                        @enderror
-                        <p class="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
-                            Leave blank to create an overall budget, or select a category for specific tracking.
-                        </p>
-                    </div>
-                    <!-- Amount -->
-                    <div>
-                        <label for="amount" class="block text-sm font-medium text-neutral-700 dark:text-neutral-200 mb-2">
-                            Budget Amount <span class="text-red-500">*</span>
-                        </label>
+                        <label class="block text-sm font-semibold mb-2">Amount <span class="text-red-500">*</span></label>
                         <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <span class="text-neutral-500 dark:text-neutral-400 text-xl">$</span>
-                            </div>
-                            <input type="number" id="amount" wire:model.live="amount" step="0.01" min="0" placeholder="0.00" class="w-full pl-10 pr-4 py-3 border border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-lg @error('amount') border-red-500 dark:border-red-400 @enderror">
+                            <span class="absolute left-3 top-3.5 text-xl text-neutral-500">$</span>
+                            <input type="number" step="0.01" wire:model="amount" placeholder="0.00" class="w-full pl-10 pr-4 py-3.5 bg-neutral-50 dark:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-indigo-500 @error('amount') border-red-500 @enderror">
                         </div>
-                        @error('amount')
-                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                        @enderror
+                        @error('amount') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                     </div>
-                    <!-- Preview Card -->
-                    @if($amount && $month && $year)
-                        <div class="p-4 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/50 dark:to-purple-900/50 rounded-lg border-2 border-indigo-200 dark:border-indigo-700">
-                            <p class="text-sm font-medium text-indigo-900 dark:text-indigo-200 mb-2">Budget Preview:</p>
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-2xl font-bold text-indigo-900 dark:text-indigo-200">${{ number_format($amount, 2) }}</p>
-                                    <p class="text-sm text-indigo-700 dark:text-indigo-300">
-                                        {{ $category_id ? ($categories->find($category_id) ? $categories->find($category_id)->name : 'Overall Budget') : 'Overall Budget' }}
-                                    </p>
-                                </div>
-                                <div class="text-right">
-                                    <p class="text-sm text-indigo-700 dark:text-indigo-300">
-                                        {{ \Carbon\Carbon::create($year, $month, 1)->format('F Y') }}
-                                    </p>
-                                    <p class="text-xs text-indigo-600 dark:text-indigo-400 mt-1">
-                                        ≈ ${{ number_format($amount / 30, 2) }}/day
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    @endif
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">Date <span class="text-red-500">*</span></label>
+                        <input type="date" wire:model="date" class="w-full px-4 py-3.5 bg-neutral-50 dark:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-indigo-500 @error('date') border-red-500 @enderror">
+                        @error('date') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-semibold mb-2">Title <span class="text-red-500">*</span></label>
+                        <input type="text" wire:model="title" placeholder="e.g., Coffee at Starbucks" class="w-full px-4 py-3.5 bg-neutral-50 dark:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-indigo-500 @error('title') border-red-500 @enderror">
+                        @error('title') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-semibold mb-2">Category</label>
+                        <select wire:model="category_id" class="w-full px-4 py-3.5 bg-neutral-50 dark:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-indigo-500">
+                            <option value="">Select category</option>
+                            @foreach($categories as $cat)
+                                <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-semibold mb-2">Notes</label>
+                        <textarea wire:model="description" rows="3" placeholder="Add details..." class="w-full px-4 py-3.5 bg-neutral-50 dark:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-indigo-500 resize-none"></textarea>
+                    </div>
                 </div>
             </div>
-            <!-- Tips Card -->
-            <div class="bg-indigo-50 dark:bg-indigo-900/50 border border-indigo-200 dark:border-indigo-700 rounded-xl p-6">
-                <div class="flex items-start gap-3">
-                    <svg class="w-6 h-6 text-indigo-600 dark:text-indigo-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-                    </svg>
+
+            <!-- Expense Type -->
+            <div class="bg-white dark:bg-neutral-800 rounded-2xl shadow-xl p-8 border border-neutral-200 dark:border-neutral-700">
+                <h3 class="text-xl font-bold mb-6">Expense Type</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <label class="flex items-center p-5 border-2 rounded-xl cursor-pointer transition {{ $type === 'one-time' ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30' : 'border-neutral-300 dark:border-neutral-600' }}">
+                        <input type="radio" wire:model.live="type" value="one-time" class="sr-only">
+                        <div class="flex items-center gap-4 flex-1">
+                            <div class="w-12 h-12 rounded-lg bg-indigo-600 flex items-center justify-center"><svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
+                            <div>
+                                <div class="font-bold">One-time</div>
+                                <div class="text-sm text-neutral-600 dark:text-neutral-400">Single purchase</div>
+                            </div>
+                        </div>
+                        @if($type === 'one-time') <svg class="w-6 h-6 text-indigo-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg> @endif
+                    </label>
+                    <label class="flex items-center p-5 border-2 rounded-xl cursor-pointer transition {{ $type === 'recurring' ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/30' : 'border-neutral-300 dark:border-neutral-600' }}">
+                        <input type="radio" wire:model.live="type" value="recurring" class="sr-only">
+                        <div class="flex items-center gap-4 flex-1">
+                            <div class="w-12 h-12 rounded-lg bg-purple-600 flex items-center justify-center"><svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg></div>
+                            <div>
+                                <div class="font-bold">Recurring</div>
+                                <div class="text-sm text-neutral-600 dark:text-neutral-400">Repeats automatically</div>
+                            </div>
+                        </div>
+                        @if($type === 'recurring') <svg class="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg> @endif
+                    </label>
+                </div>
+                @if($type === 'recurring')
+                    <div class="mt-6 p-6 bg-purple-50 dark:bg-purple-900/30 rounded-xl border-2 border-purple-200 dark:border-purple-700">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                            <div>
+                                <label class="block text-sm font-bold text-purple-900 dark:text-purple-200 mb-2">Frequency *</label>
+                                <select wire:model="recurring_frequency" class="w-full px-4 py-3 bg-white dark:bg-neutral-800 border border-purple-300 dark:border-purple-600 rounded-xl">
+                                    <option value="daily">Daily</option>
+                                    <option value="weekly">Weekly</option>
+                                    <option value="monthly">Monthly</option>
+                                    <option value="yearly">Yearly</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-purple-900 dark:text-purple-200 mb-2">Start Date *</label>
+                                <input type="date" wire:model="recurring_start_date" class="w-full px-4 py-3 bg-white dark:bg-neutral-800 border border-purple-300 dark:border-purple-600 rounded-xl">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-purple-900 dark:text-purple-200 mb-2">End Date</label>
+                                <input type="date" wire:model="recurring_end_date" class="w-full px-4 py-3 bg-white dark:bg-neutral-800 border border-purple-300 dark:border-purple-600 rounded-xl">
+                            </div>
+                        </div>
+                    </div>
+                @endif
+            </div>
+
+            <!-- Tips -->
+            <div class="bg-indigo-50 dark:bg-indigo-900/50 border border-indigo-200 dark:border-indigo-700 rounded-2xl p-6">
+                <div class="flex gap-4">
+                    <svg class="w-6 h-6 text-indigo-600 dark:text-indigo-400 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
                     <div>
-                        <h4 class="font-semibold text-indigo-900 dark:text-indigo-200 mb-2">💡 Budget Tips</h4>
+                        <h4 class="font-bold text-indigo-900 dark:text-indigo-200 mb-2">Pro Tips</h4>
                         <ul class="text-sm text-indigo-800 dark:text-indigo-200 space-y-1">
-                            <li>• <strong>Start with historical data:</strong> Review your past spending to set realistic budgets</li>
-                            <li>• <strong>Use the 50/30/20 rule:</strong> 50% needs, 30% wants, 20% savings</li>
-                            <li>• <strong>Build in buffer:</strong> Add 10% extra for unexpected expenses</li>
-                            <li>• <strong>Track regularly:</strong> Check your progress weekly to stay on target</li>
-                            @if(!$category_id)
-                                <li>• <strong>Overall budgets:</strong> Track total spending across all categories</li>
-                            @else
-                                <li>• <strong>Category budgets:</strong> Get detailed control over specific spending areas</li>
-                            @endif
+                            <li>• Use recurring for rent, Netflix, gym</li>
+                            <li>• Add notes for receipts or warranty</li>
+                            <li>• Split large purchases into categories</li>
                         </ul>
                     </div>
                 </div>
             </div>
-            <!-- Form Actions -->
-            <div class="flex items-center justify-between">
-                <a href="{{ route('budget.index') }}" class="px-6 py-3 border border-neutral-300 dark:border-neutral-600 rounded-lg text-neutral-700 dark:text-neutral-300 font-semibold hover:bg-neutral-50 dark:hover:bg-neutral-700 transition">
-                    Cancel
-                </a>
-                <button type="submit" class="px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg font-semibold hover:shadow-lg transition transform hover:-translate-y-0.5 flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                    </svg>
-                    {{ $isEdit ? 'Update Budget' : 'Create Budget' }}
+
+            <!-- Actions -->
+            <div class="flex justify-between pt-6">
+                <a href="/expenses" class="px-8 py-3.5 border border-neutral-300 dark:border-neutral-600 rounded-xl font-bold hover:bg-neutral-100 dark:hover:bg-neutral-700 transition">Cancel</a>
+                <button type="submit" class="px-10 py-3.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    {{ $isEdit ? 'Update' : 'Save' }} Expense
                 </button>
             </div>
         </form>
-        <!-- Examples Section -->
-        @if(!$isEdit && $categories->count() > 0)
-            <div class="mt-8 bg-white dark:bg-neutral-800 rounded-xl shadow-md p-6">
-                <h3 class="text-lg font-semibold text-neutral-800 dark:text-neutral-200 mb-4">Budget Examples</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="p-4 bg-neutral-50 dark:bg-neutral-700 rounded-lg">
-                        <p class="font-semibold text-neutral-900 dark:text-neutral-200 mb-2">🍔 Food & Dining</p>
-                        <p class="text-sm text-neutral-600 dark:text-neutral-400">Recommended: $400-600/month</p>
-                        <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-1">Includes groceries, restaurants, and coffee</p>
-                    </div>
-                    <div class="p-4 bg-neutral-50 dark:bg-neutral-700 rounded-lg">
-                        <p class="font-semibold text-neutral-900 dark:text-neutral-200 mb-2">🚗 Transportation</p>
-                        <p class="text-sm text-neutral-600 dark:text-neutral-400">Recommended: $200-400/month</p>
-                        <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-1">Gas, insurance, maintenance, public transit</p>
-                    </div>
-                    <div class="p-4 bg-neutral-50 dark:bg-neutral-700 rounded-lg">
-                        <p class="font-semibold text-neutral-900 dark:text-neutral-200 mb-2">🎬 Entertainment</p>
-                        <p class="text-sm text-neutral-600 dark:text-neutral-400">Recommended: $100-200/month</p>
-                        <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-1">Movies, concerts, hobbies, subscriptions</p>
-                    </div>
-                    <div class="p-4 bg-neutral-50 dark:bg-neutral-700 rounded-lg">
-                        <p class="font-semibold text-neutral-900 dark:text-neutral-200 mb-2">🛒 Shopping</p>
-                        <p class="text-sm text-neutral-600 dark:text-neutral-400">Recommended: $150-300/month</p>
-                        <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-1">Clothes, electronics, household items</p>
-                    </div>
-                </div>
-                <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-4 text-center">
-                    * These are general guidelines. Adjust based on your income and lifestyle.
-                </p>
-            </div>
-        @endif
     </div>
- 
-
 </div>

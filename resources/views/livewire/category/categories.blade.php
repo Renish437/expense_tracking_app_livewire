@@ -52,7 +52,7 @@
                             <div class="grid grid-cols-5 md:grid-cols-10 gap-2 mb-3">
                                 @foreach ($colors as $option)
                                     <button type="button" wire:click="$set('color', '{{ $option }}')"
-                                        class="w-10 h-10 rounded border-2 transition-transform {{ $color === $option ? 'border-blue-500 scale-110 ring-2 ring-blue-200' : 'border-gray-300 hover:border-gray-400 hover:scale-105 dark:border-neutral-600 dark:hover:border-neutral-400' }}"
+                                        class="w-10 h-10 rounded border-2 cursor-pointer transition-transform {{ $color === $option ? 'border-blue-500 scale-110 ring-2 ring-blue-200' : 'border-gray-300 hover:border-gray-400 hover:scale-105 dark:border-neutral-600 dark:hover:border-neutral-400' }}"
                                         style="background-color: {{ $option }} !important"
                                         title="{{ $option }}"></button>
                                 @endforeach
@@ -90,7 +90,7 @@
                                         <p class="text-xs text-gray-500 dark:text-gray-400">Icon with selected color</p>
                                     </div>
                                     <button type="button" wire:click="$set('icon', '')"
-                                        class="text-red-500 text-sm hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">
+                                        class="text-red-500 text-sm cursor-pointer hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">
                                         Remove
                                     </button>
                                 </div>
@@ -98,39 +98,56 @@
 
                             {{-- Icon Search --}}
                             <div class="mb-3">
-                                <input type="text" wire:model.live="iconSearch"
+                                <input type="text"  wire:model.live="iconSearch"
                                     class="w-full border p-2 rounded dark:bg-neutral-700 dark:border-neutral-600 dark:text-white"
                                     placeholder="Search icons..." />
                             </div>
 
                             {{-- Popular Icons Grid --}}
-                            <div
-                                class="grid grid-cols-6 md:grid-cols-8 gap-2 mb-3 max-h-48 overflow-y-auto border rounded p-2 dark:bg-neutral-700 dark:border-neutral-600">
-                                @foreach ($filteredIcons as $iconName)
-                                    <button type="button" wire:click="$set('icon', '{{ $iconName }}')"
-                                        class="p-2 rounded border flex items-center justify-center hover:bg-gray-100 transition dark:hover:bg-neutral-600
-                                        {{ $icon === $iconName ? 'bg-blue-100 border-blue-500 dark:bg-blue-900/20 dark:border-blue-500' : 'border-gray-200 dark:border-neutral-500' }}"
-                                        title="{{ $iconName }}">
-                                        <flux:icon :name="$iconName"
-                                            class="w-5 h-5 {{ $icon === $iconName ? 'text-blue-600' : 'text-gray-700 dark:text-gray-300' }}" />
-                                    </button>
-                                @endforeach
-                            </div>
+                           <div
+    class="grid grid-cols-6 md:grid-cols-8 gap-2 mb-3 max-h-48 overflow-y-auto border rounded p-2 dark:bg-neutral-800 dark:border-neutral-600">
+
+    @if (!empty($filteredIcons) && count($filteredIcons) > 0)
+        @foreach ($filteredIcons as $iconName)
+            <button
+                type="button"
+                wire:click="$set('icon', '{{ $iconName }}')"
+                class="p-2 rounded border flex items-center cursor-pointer justify-center transition
+                       hover:bg-gray-100 dark:hover:bg-neutral-700
+                       {{ $icon === $iconName 
+                            ? 'bg-blue-100 border-blue-500 dark:bg-blue-900/30 dark:border-blue-500' 
+                            : 'border-gray-200 dark:border-neutral-600' }}"
+                title="{{ $iconName }}"
+            >
+                <flux:icon 
+                    :name="$iconName"
+                    class="w-5 h-5 {{ $icon === $iconName 
+                        ? 'text-blue-600' 
+                        : 'text-gray-700 dark:text-gray-300' }}" 
+                />
+            </button>
+        @endforeach
+    @else
+        <p class="text-center text-gray-500 dark:text-gray-400 col-span-full py-4">
+            No icons found.
+        </p>
+    @endif
+</div>
 
                             {{-- Manual Input --}}
-                            <input type="text" wire:model.defer="icon"
+                            <input type="text" disabled wire:model.defer="icon"
                                 class="w-full border p-2 rounded dark:bg-neutral-700 dark:border-neutral-600 dark:text-white"
                                 placeholder="Or enter custom heroicon name (e.g., home)" />
                         </div>
 
                         {{-- SIMPLIFIED SAVE BUTTON - NO SPINNER --}}
                         <button type="submit"
-                            class="bg-primary-gradient text-white px-6 py-3 rounded hover:bg-blue-700 transition w-full flex items-center justify-center">
+                            class="bg-primary-gradient cursor-pointer text-white px-6 py-3 rounded hover:bg-blue-700 transition w-full flex items-center justify-center">
                             {{ $isEditing ? 'Update Category' : 'Save Category' }}
                         </button>
                         @if ($isEditing)
                             <button wire:click="cancelEdit" type="button"
-                                class="bg-gray-600 text-white px-6 py-3 rounded hover:bg-gray-700 transition w-full flex items-center justify-center">
+                                class="bg-gray-600 text-white cursor-pointer px-6 py-3 rounded hover:bg-gray-700 transition w-full flex items-center justify-center">
                                 Cancel
                             </button>
                         @endif
@@ -172,7 +189,7 @@
 
                                     <div class="flex items-center space-x-2">
                                         <button wire:click="editCategory({{ $category->id }})"
-                                            class="text-blue-600 hover:text-blue-800 text-sm font-medium px-2 py-1 rounded hover:bg-blue-50 transition dark:text-blue-400 dark:hover:text-blue-300 dark:hover:bg-blue-900/20">
+                                            class="text-blue-600 hover:text-blue-800 cursor-pointer text-sm font-medium px-2 py-1 rounded hover:bg-blue-50 transition dark:text-blue-400 dark:hover:text-blue-300 dark:hover:bg-blue-900/20">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                                 stroke-width="1.5" stroke="currentColor" class="size-6">
                                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -182,7 +199,7 @@
                                         </button>
                                         <button wire:click="deleteCategory({{ $category->id }})"
                                             wire:confirm="Are you sure you want to delete '{{ $category->name }}'?"
-                                            class="text-red-600 hover:text-red-800 text-sm font-medium px-2 py-1 rounded hover:bg-red-50 transition dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20">
+                                            class="text-red-600 hover:text-red-800 text-sm cursor-pointer font-medium px-2 py-1 rounded hover:bg-red-50 transition dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                                 stroke-width="1.5" stroke="currentColor" class="size-6">
                                                 <path stroke-linecap="round" stroke-linejoin="round"

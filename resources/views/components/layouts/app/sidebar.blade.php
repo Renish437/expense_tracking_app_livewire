@@ -22,6 +22,7 @@
                     <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
                     <flux:navlist.item icon="squares-2x2" :href="route('category.index')" :current="request()->routeIs('category.*')" wire:navigate>{{ __('Categories') }}</flux:navlist.item>
                     <flux:navlist.item icon="credit-card" :href="route('budget.index')" :current="request()->routeIs('budget.*')" wire:navigate>{{ __('Budgets') }}</flux:navlist.item>
+                    <flux:navlist.item icon="banknotes" :href="route('expenses.index')" :current="request()->routeIs('expenses.*')" wire:navigate>{{ __('Expenses') }}</flux:navlist.item>
                 </flux:navlist.group>
             </flux:navlist>
 
