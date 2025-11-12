@@ -9,7 +9,7 @@
                 </div>
                 <div class="flex items-center gap-4">
                     <!-- Dark Mode Toggle -->
-                    
+
 
                     <a href="/expenses/create"
                        class="bg-white text-black  px-6 py-3 cursor-pointer rounded-xl font-bold shadow-md hover:shadow-lg transition flex items-center gap-2 hover:scale-105">
@@ -73,7 +73,7 @@
                         <input type="date" wire:model.live="endDate"
                                class="w-full px-4 py-3 bg-neutral-50 dark:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-2 focus:ring-purple-500 text-neutral-900 dark:text-white">
                     </div>
-                </div> 
+                </div>
 
                 <div class="mt-6 pt-5 border-t border-neutral-200 dark:border-neutral-700 flex flex-wrap items-center justify-between gap-4">
                     <div class="text-sm font-medium text-neutral-600 dark:text-neutral-400">

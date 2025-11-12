@@ -2,8 +2,8 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
     <head>
         @include('partials.head')
-      
-    
+
+
     <!-- OR use this alternative if above doesn't work -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script defer  src="{{ asset('js/toast.js') }}" ></script>
@@ -23,6 +23,9 @@
                     <flux:navlist.item icon="squares-2x2" :href="route('category.index')" :current="request()->routeIs('category.*')" wire:navigate>{{ __('Categories') }}</flux:navlist.item>
                     <flux:navlist.item icon="credit-card" :href="route('budget.index')" :current="request()->routeIs('budget.*')" wire:navigate>{{ __('Budgets') }}</flux:navlist.item>
                     <flux:navlist.item icon="banknotes" :href="route('expenses.index')" :current="request()->routeIs('expenses.*')" wire:navigate>{{ __('Expenses') }}</flux:navlist.item>
+                       <flux:navlist.item icon="arrow-path" :href="route('recurring-expenses.index')"
+                    :current="request()->routeIs('recurring-expenses.index')" wire:navigate>{{ __('Recurring Expenses') }}
+                </flux:navlist.item>
                 </flux:navlist.group>
             </flux:navlist>
 
@@ -138,11 +141,11 @@
 
 
 
-   
-        @fluxScripts
-  
 
-          
+        @fluxScripts
+
+
+
     </body>
 
        <script>

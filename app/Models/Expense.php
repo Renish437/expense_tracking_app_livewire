@@ -62,27 +62,27 @@ class Expense extends Model
         return $this->type === "recurring";
     }
 
-    public function shouldGenerateNextOccurance(): bool {
-        if(!$this->isRecurring()){
-            return false;
-        }
-        if($this->recurring_end_date && now()->isAfter($this->recurring_end_date)){
-            return false;
-        }
-        return true;
+public function shouldGenerateNextOccurrence(): bool {
+    if(!$this->isRecurring()){
+        return false;
+    }
+    if($this->recurring_end_date && now()->isAfter($this->recurring_end_date)){
+        return false;
+    }
+    return true;
+}
+
+
+   public function getNextOccurrenceDate(){
+    if(!$this->isRecurring()){
+        return null;
     }
 
-    public function getNextOccurrenceDate(){
-        if(!$this->isRecurring()){
-            return null;
-        }
+    $lastChildExpense = $this->childExpenses()->orderBy('date','desc')->first();
+    $baseDate = $lastChildExpense ? $lastChildExpense->date : $this->recurring_start_date;
 
-        $lastChildExpense = $this->childExpenses()
-            ->orderBy('date','desc')
-            ->first();
-
-        $baseDate = $lastChildExpense ? $lastChildExpense->date : $this->recurring_start_date;
-
+    // If lastChildExpense exists, generate next occurrence AFTER it
+    if ($lastChildExpense) {
         return match($this->recurring_frequency){
             'daily' => $baseDate->copy()->addDay(),
             'weekly' => $baseDate->copy()->addWeek(),
@@ -91,4 +91,10 @@ class Expense extends Model
             default => null,
         };
     }
+
+    // If no child exists, generate for start date itself
+    return $baseDate;
+}
+
+
 }
